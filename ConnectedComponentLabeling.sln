@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PatternRecognition", "PatternRecognition\PatternRecognition.csproj", "{0064182F-1C88-41AB-B146-DDF8F0164A3D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "UnitTests\UnitTests.csproj", "{6C03E958-1A77-412C-884B-E40FC1E26CF3}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E7CC79CE-C458-4BE9-BC3B-84AF612FE89A}"
+	ProjectSection(SolutionItems) = preProject
+		ConnectedComponentLabeling.vsmdi = ConnectedComponentLabeling.vsmdi
+		Local.testsettings = Local.testsettings
+		TraceAndTestImpact.testsettings = TraceAndTestImpact.testsettings
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(TestCaseManagementSettings) = postSolution
+		CategoryFile = ConnectedComponentLabeling.vsmdi
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0064182F-1C88-41AB-B146-DDF8F0164A3D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0064182F-1C88-41AB-B146-DDF8F0164A3D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0064182F-1C88-41AB-B146-DDF8F0164A3D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0064182F-1C88-41AB-B146-DDF8F0164A3D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6C03E958-1A77-412C-884B-E40FC1E26CF3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6C03E958-1A77-412C-884B-E40FC1E26CF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6C03E958-1A77-412C-884B-E40FC1E26CF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6C03E958-1A77-412C-884B-E40FC1E26CF3}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

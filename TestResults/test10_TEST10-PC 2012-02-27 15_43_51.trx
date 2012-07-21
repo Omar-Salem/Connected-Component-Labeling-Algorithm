@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<TestRun id="b3372b4f-1f54-408b-8bc7-53529fd9285e" name="test10@TEST10-PC 2012-02-27 15:43:51" runUser="test10-PC\test10" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <TestSettings name="Local" id="f3043938-dcdd-4f2a-9e2a-5afcdb710703">
+    <Description>These are default test settings for a local test run.</Description>
+    <Deployment enabled="false" runDeploymentRoot="test10_TEST10-PC 2012-02-27 15_43_51">
+      <DeploymentItem filename="D:\Mine\CCL\PatternRecognition\bin\Debug\PatternRecognition.dll" />
+    </Deployment>
+    <Execution>
+      <TestTypeSpecific />
+      <AgentRule name="Execution Agents">
+      </AgentRule>
+    </Execution>
+  </TestSettings>
+  <Times creation="2012-02-27T15:43:51.4888874+02:00" queuing="2012-02-27T15:43:52.7569600+02:00" start="2012-02-27T15:43:52.9079686+02:00" finish="2012-02-27T15:44:39.6216405+02:00" />
+  <ResultSummary outcome="Error">
+    <Counters total="1" executed="1" error="0" failed="0" timeout="0" aborted="1" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" passed="0" completed="0" inProgress="0" pending="0" />
+    <RunInfos>
+      <RunInfo computerName="TEST10-PC" outcome="Error" timestamp="2012-02-27T15:44:39.6216405+02:00">
+        <Text>Test host process exited unexpectedly.</Text>
+      </RunInfo>
+    </RunInfos>
+  </ResultSummary>
+  <TestDefinitions>
+    <UnitTest name="ExtractTest" storage="c:\users\test10\desktop\article\connectedcomponentlabeling\unittests\bin\debug\unittests.dll" id="3eb38f8d-f097-7d4d-ae55-d20c406921e6">
+      <Execution id="0376dd80-7c4b-47bf-b0fd-89161f2c420c" />
+      <TestMethod codeBase="C:/Users/test10/Desktop/Article/ConnectedComponentLabeling/UnitTests/bin/Debug/UnitTests.DLL" adapterTypeName="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestAdapter, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.Adapter, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" className="UnitTests.PreProcessTest, UnitTests, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" name="ExtractTest" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <TestEntries>
+    <TestEntry testId="3eb38f8d-f097-7d4d-ae55-d20c406921e6" executionId="0376dd80-7c4b-47bf-b0fd-89161f2c420c" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <Results>
+    <UnitTestResult executionId="0376dd80-7c4b-47bf-b0fd-89161f2c420c" testId="3eb38f8d-f097-7d4d-ae55-d20c406921e6" testName="ExtractTest" computerName="TEST10-PC" duration="00:00:46.5676635" startTime="2012-02-27T15:43:53.0539770+02:00" endTime="2012-02-27T15:44:39.6216405+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Aborted" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="0376dd80-7c4b-47bf-b0fd-89161f2c420c">
+    </UnitTestResult>
+  </Results>
+</TestRun>
