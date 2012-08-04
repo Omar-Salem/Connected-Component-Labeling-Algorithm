@@ -55,7 +55,7 @@ namespace ConnectedComponentLabeling.Implementation
 
         #region Protected Functions
 
-        protected virtual bool IsForeGround(Pixel currentPixel)
+        protected virtual bool CheckIsForeGround(Pixel currentPixel)
         {
             return currentPixel.color.A == 255 && currentPixel.color.R == 0 && currentPixel.color.G == 0 && currentPixel.color.B == 0;
         }
@@ -78,7 +78,7 @@ namespace ConnectedComponentLabeling.Implementation
                 {
                     currentPixel = new Pixel(new Point(j, i), input.GetPixel(j, i));
 
-                    if (IsForeGround(currentPixel))
+                    if (CheckIsForeGround(currentPixel))
                     {
                         neighboringLabels = GetNeighboringLabels(currentPixel);
 
