@@ -34,29 +34,5 @@ namespace PatternRecognition
             }
             return images;
         }
-
-        int GetDimension(List<Pixel> shape, out int dimensionShift, bool isWidth)
-        {
-            int dimension;
-            int result = dimensionShift = CheckDimensionType(shape[0], isWidth);
-            for (int i = 1; i < shape.Count; i++)
-            {
-                dimension = CheckDimensionType(shape[i], isWidth);
-                if (result < dimension)
-                {
-                    result = dimension;
-                }
-                if (dimensionShift > dimension)
-                {
-                    dimensionShift = dimension;
-                }
-            }
-            return (result + 1) - dimensionShift;
-        }
-
-        int CheckDimensionType(Pixel shape, bool isWidth)
-        {
-            return isWidth ? shape.Position.X : shape.Position.Y;
-        }
     }
 }

@@ -2,21 +2,31 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace PatternRecognition
+namespace Entities
 {
-    class Label
+    public class Label
     {
+        #region Public Properties
+
+        public int Name { get; set; }
+
+        public Label Root { get; set; } 
+
+        #endregion
+
+        #region Constructor
+
         public Label(int Name)
         {
             this.Name = Name;
             this.Root = this;
-        }
+        } 
 
-        public int Name { get; set; }
+        #endregion
 
-        public Label Root { get; set; }
+        #region Public Methods
 
-        internal Label GetRoot()
+        public Label GetRoot()
         {
             if (this.Root != this)
             {
@@ -38,6 +48,8 @@ namespace PatternRecognition
         public override int GetHashCode()
         {
             return this.Name;
-        }
+        } 
+
+        #endregion
     }
 }

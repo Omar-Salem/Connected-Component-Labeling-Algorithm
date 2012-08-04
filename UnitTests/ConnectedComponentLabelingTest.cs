@@ -1,28 +1,32 @@
-﻿using PatternRecognition;
+﻿using ConnectedComponentLabeling.Implementation;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Drawing;
-using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
+using ConnectedComponentLabeling.Contracts;
 
 namespace UnitTests
 {
     [TestClass()]
-    public class PreProcessTest
+    public class ConnectedComponentLabelingTest
     {
         string savePath = AppDomain.CurrentDomain.BaseDirectory + @"\Images\";
 
         [TestMethod()]
-        public void ExtractTest()
+        public void ProcessTest()
         {
+            //Arrange
+            IConnectedComponentLabeling target = new CCL();
             Bitmap input = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + @"\Test.bmp");
-            PreProcess target = new PreProcess(input);
-            List<Bitmap> actual = target.Extract();
+
+            //Act
+            var actual = target.Process(input);
             for (int i = 0; i < actual.Count; i++)
             {
                 actual[i].Save(savePath + (i + 1).ToString() + ".bmp");
             }
+
+            //Assert
             Assert.IsTrue(actual.Count == 2);
         }
 
