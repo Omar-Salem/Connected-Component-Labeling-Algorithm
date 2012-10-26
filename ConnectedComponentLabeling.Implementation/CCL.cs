@@ -3,6 +3,7 @@ using ConnectedComponentLabeling.Contracts;
 using System.Drawing;
 using System.ComponentModel.Composition;
 using Entities;
+using System.Linq;
 
 namespace ConnectedComponentLabeling.Implementation
 {
@@ -13,9 +14,7 @@ namespace ConnectedComponentLabeling.Implementation
         #region Member Variables
 
         private int[,] _board;
-        private int _width;
-        private int _height;
-        private Bitmap input;
+        private Bitmap _input;
 
         #endregion
 
@@ -23,24 +22,24 @@ namespace ConnectedComponentLabeling.Implementation
 
         public IList<Bitmap> Process(Bitmap input)
         {
-            this.input = input;
-            _width = input.Width;
-            _height = input.Height;
-            _board = new int[_width, _height];
+            _input = input;
+            int width = input.Width;
+            int height = input.Height;
+            _board = new int[width, height];
 
 
             int w, h, widthShift, heightShift;
             Bitmap output;
             List<Bitmap> images = new List<Bitmap>();
-            Dictionary<int, List<Pixel>> Patterns = Find();
+            Dictionary<int, List<Pixel>> patternsList = Find(width, height);
 
-            foreach (KeyValuePair<int, List<Pixel>> shape in Patterns)
+            foreach (KeyValuePair<int, List<Pixel>> pattern in patternsList)
             {
-                w = GetDimension(shape.Value, out widthShift, true);
-                h = GetDimension(shape.Value, out heightShift, false);
+                w = GetDimension(pattern.Value, out widthShift, true);
+                h = GetDimension(pattern.Value, out heightShift, false);
                 output = new Bitmap(w, h);
 
-                foreach (Pixel pix in shape.Value)
+                foreach (Pixel pix in pattern.Value)
                 {
                     output.SetPixel(pix.Position.X - widthShift, pix.Position.Y - heightShift, pix.color);
                 }
@@ -49,7 +48,7 @@ namespace ConnectedComponentLabeling.Implementation
             }
 
             return images;
-        } 
+        }
 
         #endregion
 
@@ -64,23 +63,21 @@ namespace ConnectedComponentLabeling.Implementation
 
         #region Private Functions
 
-        private Dictionary<int, List<Pixel>> Find()
+        private Dictionary<int, List<Pixel>> Find(int width, int height)
         {
-            Pixel currentPixel;
             Label currentLabel = new Label(0);
             int labelCount = 0;
-            Dictionary<int, int> neighboringLabels;
             Dictionary<int, Label> allLabels = new Dictionary<int, Label>();
 
-            for (int i = 0; i < _height; i++)
+            for (int i = 0; i < height; i++)
             {
-                for (int j = 0; j < _width; j++)
+                for (int j = 0; j < width; j++)
                 {
-                    currentPixel = new Pixel(new Point(j, i), input.GetPixel(j, i));
+                    Pixel currentPixel = new Pixel(new Point(j, i), _input.GetPixel(j, i));
 
                     if (CheckIsForeGround(currentPixel))
                     {
-                        neighboringLabels = GetNeighboringLabels(currentPixel);
+                        Dictionary<int, int> neighboringLabels = GetNeighboringLabels(currentPixel, width, height);
 
                         if (neighboringLabels.Count == 0)
                         {
@@ -89,13 +86,8 @@ namespace ConnectedComponentLabeling.Implementation
                         }
                         else
                         {
-                            foreach (int label in neighboringLabels.Keys)
-                            {
-                                currentLabel.Name = label;//set currentLabel to the first label found in neighboring cells
-                                break;
-                            }
-
-                            MergeLabels(currentLabel.Name, neighboringLabels, allLabels);
+                            currentLabel.Name = neighboringLabels.ElementAt(0).Key;
+                            MarkNeighboringLabelsParents(currentLabel.Name, neighboringLabels, allLabels);
                         }
 
                         _board[j, i] = currentLabel.Name;
@@ -104,22 +96,22 @@ namespace ConnectedComponentLabeling.Implementation
             }
 
 
-            Dictionary<int, List<Pixel>> Patterns = AggregatePatterns(allLabels);
+            Dictionary<int, List<Pixel>> Patterns = AggregatePatterns(allLabels, width, height);
 
             return Patterns;
         }
 
-        private Dictionary<int, int> GetNeighboringLabels(Pixel pix)
+        private Dictionary<int, int> GetNeighboringLabels(Pixel pix, int width, int height)
         {
             Dictionary<int, int> neighboringLabels = new Dictionary<int, int>();
             int x = pix.Position.Y;
             int y = pix.Position.X;
 
-            for (int i = x - 1; i < _height; i++)
+            for (int i = x - 1; i < height; i++)
             {
                 if (CheckWithinBoundaries(i, x + 2))
                 {
-                    for (int j = y - 1; j < _width; j++)
+                    for (int j = y - 1; j < width; j++)
                     {
                         if (CheckWithinBoundaries(j, y + 2))
                         {
@@ -143,16 +135,15 @@ namespace ConnectedComponentLabeling.Implementation
             return j > -1 && j < y;
         }
 
-        private void MergeLabels(int currentLabel, Dictionary<int, int> neighboringLabels, Dictionary<int, Label> labels)
+        private void MarkNeighboringLabelsParents(int currentLabel, Dictionary<int, int> neighboringLabelsList, Dictionary<int, Label> allLabels)
         {
-            Label root = labels[currentLabel].GetRoot();
-            Label neighbor;
+            Label root = allLabels[currentLabel].GetRoot();
 
-            foreach (int key in neighboringLabels.Keys)
+            foreach (int neighborLabel in neighboringLabelsList.Keys)
             {
-                if (key != currentLabel)
+                if (neighborLabel != currentLabel)
                 {
-                    neighbor = labels[key];
+                    Label neighbor = allLabels[neighborLabel];
 
                     if (neighbor.GetRoot() != root)
                     {
@@ -162,17 +153,15 @@ namespace ConnectedComponentLabeling.Implementation
             }
         }
 
-        private Dictionary<int, List<Pixel>> AggregatePatterns(Dictionary<int, Label> allLabels)
+        private Dictionary<int, List<Pixel>> AggregatePatterns(Dictionary<int, Label> allLabels, int width, int height)
         {
-            int patternNumber;
-            List<Pixel> shape;
             Dictionary<int, List<Pixel>> Patterns = new Dictionary<int, List<Pixel>>();
 
-            for (int i = 0; i < _width; i++)
+            for (int i = 0; i < width; i++)
             {
-                for (int j = 0; j < _height; j++)
+                for (int j = 0; j < height; j++)
                 {
-                    patternNumber = _board[i, j];
+                    int patternNumber = _board[i, j];
 
                     if (patternNumber != 0)
                     {
@@ -180,15 +169,15 @@ namespace ConnectedComponentLabeling.Implementation
 
                         if (!Patterns.ContainsKey(patternNumber))
                         {
-                            shape = new List<Pixel>();
-                            shape.Add(new Pixel(new Point(i, j), Color.Black));
-                            Patterns.Add(patternNumber, shape);
+                            List<Pixel> pattern = new List<Pixel>();
+                            pattern.Add(new Pixel(new Point(i, j), Color.Black));
+                            Patterns.Add(patternNumber, pattern);
                         }
                         else
                         {
-                            shape = Patterns[patternNumber];
-                            shape.Add(new Pixel(new Point(i, j), Color.Black));
-                            Patterns[patternNumber] = shape;
+                            List<Pixel> pattern = Patterns[patternNumber];
+                            pattern.Add(new Pixel(new Point(i, j), Color.Black));
+                            Patterns[patternNumber] = pattern;
                         }
                     }
                 }
@@ -199,12 +188,11 @@ namespace ConnectedComponentLabeling.Implementation
 
         private int GetDimension(List<Pixel> shape, out int dimensionShift, bool isWidth)
         {
-            int dimension;
             int result = dimensionShift = CheckDimensionType(shape[0], isWidth);
 
             for (int i = 1; i < shape.Count; i++)
             {
-                dimension = CheckDimensionType(shape[i], isWidth);
+                int dimension = CheckDimensionType(shape[i], isWidth);
 
                 if (result < dimension)
                 {
