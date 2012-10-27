@@ -20,7 +20,7 @@ namespace Entities
         {
             this.Name = Name;
             this.Root = this;
-        } 
+        }
 
         #endregion
 

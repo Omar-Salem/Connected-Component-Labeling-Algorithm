@@ -65,7 +65,6 @@ namespace ConnectedComponentLabeling.Implementation
 
         private Dictionary<int, List<Pixel>> Find(int width, int height)
         {
-            Label currentLabel = new Label(0);
             int labelCount = 0;
             Dictionary<int, Label> allLabels = new Dictionary<int, Label>();
 
@@ -77,20 +76,21 @@ namespace ConnectedComponentLabeling.Implementation
 
                     if (CheckIsForeGround(currentPixel))
                     {
-                        Dictionary<int, int> neighboringLabels = GetNeighboringLabels(currentPixel, width, height);
+                        Dictionary<int, int> neighboringLabels = GetDistinctNeighboringLabels(currentPixel, width, height);
+                        int currentLabel;
 
                         if (neighboringLabels.Count == 0)
                         {
-                            currentLabel.Name = ++labelCount;
-                            allLabels.Add(currentLabel.Name, new Label(currentLabel.Name));
+                            currentLabel = ++labelCount;
+                            allLabels.Add(currentLabel, new Label(currentLabel));
                         }
                         else
                         {
-                            currentLabel.Name = neighboringLabels.ElementAt(0).Key;
-                            MarkNeighboringLabelsParents(currentLabel.Name, neighboringLabels, allLabels);
+                            currentLabel = neighboringLabels.ElementAt(0).Key;
+                            UnifyNeighboringLabelsParents(currentLabel, neighboringLabels, allLabels);
                         }
 
-                        _board[j, i] = currentLabel.Name;
+                        _board[j, i] = currentLabel;
                     }
                 }
             }
@@ -101,27 +101,21 @@ namespace ConnectedComponentLabeling.Implementation
             return Patterns;
         }
 
-        private Dictionary<int, int> GetNeighboringLabels(Pixel pix, int width, int height)
+        private Dictionary<int, int> GetDistinctNeighboringLabels(Pixel pix, int width, int height)
         {
             Dictionary<int, int> neighboringLabels = new Dictionary<int, int>();
             int x = pix.Position.Y;
             int y = pix.Position.X;
 
-            for (int i = x - 1; i < height; i++)
+            for (int i = x - 1; i <= x + 1 && i > -1 && i < height; i++)
             {
-                if (CheckWithinBoundaries(i, x + 2))
+                for (int j = y - 1; j <= y + 1 && j > -1 && j < width; j++)
                 {
-                    for (int j = y - 1; j < width; j++)
+                    if (_board[j, i] != 0)
                     {
-                        if (CheckWithinBoundaries(j, y + 2))
+                        if (!neighboringLabels.ContainsKey(_board[j, i]))
                         {
-                            if (_board[j, i] != 0)
-                            {
-                                if (!neighboringLabels.ContainsKey(_board[j, i]))
-                                {
-                                    neighboringLabels.Add(_board[j, i], 0);
-                                }
-                            }
+                            neighboringLabels.Add(_board[j, i], 0);
                         }
                     }
                 }
@@ -130,12 +124,7 @@ namespace ConnectedComponentLabeling.Implementation
             return neighboringLabels;
         }
 
-        private bool CheckWithinBoundaries(int j, int y)
-        {
-            return j > -1 && j < y;
-        }
-
-        private void MarkNeighboringLabelsParents(int currentLabel, Dictionary<int, int> neighboringLabelsList, Dictionary<int, Label> allLabels)
+        private void UnifyNeighboringLabelsParents(int currentLabel, Dictionary<int, int> neighboringLabelsList, Dictionary<int, Label> allLabels)
         {
             Label root = allLabels[currentLabel].GetRoot();
 
