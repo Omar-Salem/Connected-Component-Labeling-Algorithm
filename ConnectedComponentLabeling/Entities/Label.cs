@@ -38,22 +38,6 @@ namespace ConnectedComponentLabeling
             return this.Root;
         }
 
-        public override bool Equals(object obj)
-        {
-            if (obj == null || obj.GetType() != this.GetType())
-            {
-                return false;
-            }
-
-            Label other = (Label)obj;
-            return this.Name == other.Name;
-        }
-
-        public override int GetHashCode()
-        {
-            return this.Name;
-        }
-
         internal void Join(Label root2)
         {
             if (root2.Rank < this.Rank)//is the rank of Root2 less than that of Root1 ?
@@ -71,6 +55,5 @@ namespace ConnectedComponentLabeling
         }
 
         #endregion
-
     }
 }
