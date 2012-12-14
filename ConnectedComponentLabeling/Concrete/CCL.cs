@@ -37,20 +37,6 @@ namespace ConnectedComponentLabeling
             return images;
         }
 
-        private Bitmap CreateBitmap(List<Pixel> pixels)
-        {
-            int widthShift, heightShift;
-            int w = GetDimension(pixels, out widthShift, true);
-            int h = GetDimension(pixels, out heightShift, false);
-            var output = new Bitmap(w, h);
-
-            foreach (Pixel pix in pixels)
-            {
-                output.SetPixel(pix.Position.X - widthShift, pix.Position.Y - heightShift, pix.color);
-            }
-            return output;
-        }
-
         #endregion
 
         #region Protected Methods
@@ -163,37 +149,19 @@ namespace ConnectedComponentLabeling
             }
         }
 
-        private Dictionary<int, List<Pixel>> AggregatePatterns(Dictionary<int, Label> allLabels, int width, int height)
+        private Bitmap CreateBitmap(List<Pixel> pixels)
         {
-            var patterns = new Dictionary<int, List<Pixel>>();
+            int widthShift, heightShift;
+            int w = GetDimension(pixels, out widthShift, true);
+            int h = GetDimension(pixels, out heightShift, false);
+            var output = new Bitmap(w, h);
 
-            for (int i = 0; i < height; i++)
+            foreach (Pixel pix in pixels)
             {
-                for (int j = 0; j < width; j++)
-                {
-                    int patternNumber = _board[j, i];
-              
-                    if (patternNumber != 0)
-                    {
-                        patternNumber = allLabels[patternNumber].GetRoot().Name;
-
-                        if (!patterns.ContainsKey(patternNumber))
-                        {
-                            List<Pixel> pattern = new List<Pixel>();
-                            pattern.Add(new Pixel(new Point(j, i), Color.Black));
-                            patterns.Add(patternNumber, pattern);
-                        }
-                        else
-                        {
-                            List<Pixel> pattern = patterns[patternNumber];
-                            pattern.Add(new Pixel(new Point(j, i), Color.Black));
-                            patterns[patternNumber] = pattern;
-                        }
-                    }
-                }
+                output.SetPixel(pix.Position.X - widthShift, pix.Position.Y - heightShift, pix.color);
             }
 
-            return patterns;
+            return output;
         }
 
         private int GetDimension(List<Pixel> shape, out int dimensionShift, bool isWidth)
@@ -221,6 +189,39 @@ namespace ConnectedComponentLabeling
         private int CheckDimensionType(Pixel shape, bool isWidth)
         {
             return isWidth ? shape.Position.X : shape.Position.Y;
+        }
+
+        private Dictionary<int, List<Pixel>> AggregatePatterns(Dictionary<int, Label> allLabels, int width, int height)
+        {
+            var patterns = new Dictionary<int, List<Pixel>>();
+
+            for (int i = 0; i < height; i++)
+            {
+                for (int j = 0; j < width; j++)
+                {
+                    int patternNumber = _board[j, i];
+
+                    if (patternNumber != 0)
+                    {
+                        patternNumber = allLabels[patternNumber].GetRoot().Name;
+
+                        if (!patterns.ContainsKey(patternNumber))
+                        {
+                            List<Pixel> pattern = new List<Pixel>();
+                            pattern.Add(new Pixel(new Point(j, i), Color.Black));
+                            patterns.Add(patternNumber, pattern);
+                        }
+                        else
+                        {
+                            List<Pixel> pattern = patterns[patternNumber];
+                            pattern.Add(new Pixel(new Point(j, i), Color.Black));
+                            patterns[patternNumber] = pattern;
+                        }
+                    }
+                }
+            }
+
+            return patterns;
         }
 
         #endregion
