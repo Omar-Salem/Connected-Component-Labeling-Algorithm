@@ -1,9 +1,8 @@
-﻿using ConnectedComponentLabeling.Implementation;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Drawing;
 using System.IO;
-using ConnectedComponentLabeling.Contracts;
+using ConnectedComponentLabeling;
 
 namespace UnitTests
 {
@@ -20,14 +19,15 @@ namespace UnitTests
             Bitmap input = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + @"\Test.bmp");
 
             //Act
-            var actual = target.Process(input);
-            for (int i = 0; i < actual.Count; i++)
+            var images = target.Process(input);
+
+            foreach (var image in images)
             {
-                actual[i].Save(savePath + (i + 1).ToString() + ".bmp");
+                image.Value.Save(savePath + image.Key + ".bmp");
             }
 
             //Assert
-            Assert.IsTrue(actual.Count == 2);
+            Assert.AreEqual(2, images.Count);
         }
 
         [TestCleanup()]

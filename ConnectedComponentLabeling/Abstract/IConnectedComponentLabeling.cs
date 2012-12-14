@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 
-namespace ConnectedComponentLabeling.Contracts
+namespace ConnectedComponentLabeling
 {
     public interface IConnectedComponentLabeling
     {
-        IList<Bitmap> Process(Bitmap input);
+        IDictionary<int, Bitmap> Process(Bitmap input);
     }
 }

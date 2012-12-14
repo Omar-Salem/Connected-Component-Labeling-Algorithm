@@ -56,17 +56,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ConnectedComponentLabeling.Contracts\ConnectedComponentLabeling.Contracts.csproj">
-      <Project>{37DC959B-61C7-4D65-A944-1320D7F55129}</Project>
-      <Name>ConnectedComponentLabeling.Contracts</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ConnectedComponentLabeling.Implementation\ConnectedComponentLabeling.Implementation.csproj">
+    <ProjectReference Include="..\ConnectedComponentLabeling\ConnectedComponentLabeling.csproj">
       <Project>{E5FDD24B-00E3-4392-9080-725CDCDAB047}</Project>
-      <Name>ConnectedComponentLabeling.Implementation</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Entities\Entities.csproj">
-      <Project>{7D182A8D-DDD2-41F8-95A3-FFEB97A90B61}</Project>
-      <Name>Entities</Name>
+      <Name>ConnectedComponentLabeling</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

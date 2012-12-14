@@ -8,8 +8,8 @@
     <ProjectGuid>{E5FDD24B-00E3-4392-9080-725CDCDAB047}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ConnectedComponentLabeling.Implementation</RootNamespace>
-    <AssemblyName>ConnectedComponentLabeling.Implementation</AssemblyName>
+    <RootNamespace>ConnectedComponentLabeling</RootNamespace>
+    <AssemblyName>ConnectedComponentLabeling</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -42,18 +42,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CCL.cs" />
+    <Compile Include="Concrete\CCL.cs" />
+    <Compile Include="Entities\Label.cs" />
+    <Compile Include="Entities\Pixel.cs" />
+    <Compile Include="Abstract\IConnectedComponentLabeling.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\ConnectedComponentLabeling.Contracts\ConnectedComponentLabeling.Contracts.csproj">
-      <Project>{37DC959B-61C7-4D65-A944-1320D7F55129}</Project>
-      <Name>ConnectedComponentLabeling.Contracts</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Entities\Entities.csproj">
-      <Project>{7D182A8D-DDD2-41F8-95A3-FFEB97A90B61}</Project>
-      <Name>Entities</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
