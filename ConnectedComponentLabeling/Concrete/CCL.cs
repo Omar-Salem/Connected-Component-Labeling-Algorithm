@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Drawing;
 using System.ComponentModel.Composition;
 using System.Linq;
@@ -207,16 +207,10 @@ namespace ConnectedComponentLabeling
 
                         if (!patterns.ContainsKey(patternNumber))
                         {
-                            List<Pixel> pattern = new List<Pixel>();
-                            pattern.Add(new Pixel(new Point(j, i), Color.Black));
-                            patterns.Add(patternNumber, pattern);
+                            patterns.Add(patternNumber, new List<Pixel>());
                         }
-                        else
-                        {
-                            List<Pixel> pattern = patterns[patternNumber];
-                            pattern.Add(new Pixel(new Point(j, i), Color.Black));
-                            patterns[patternNumber] = pattern;
-                        }
+
+                        patterns[patternNumber].Add(new Pixel(new Point(j, i), Color.Black));
                     }
                 }
             }
