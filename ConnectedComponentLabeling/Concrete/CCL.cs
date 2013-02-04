@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
 using System.ComponentModel.Composition;
 using System.Linq;
@@ -13,6 +13,8 @@ namespace ConnectedComponentLabeling
 
         private int[,] _board;
         private Bitmap _input;
+        private int _width;
+        private int _height;
 
         #endregion
 
@@ -21,11 +23,11 @@ namespace ConnectedComponentLabeling
         public IDictionary<int, Bitmap> Process(Bitmap input)
         {
             _input = input;
-            int width = input.Width;
-            int height = input.Height;
-            _board = new int[width, height];
+            _width = input.Width;
+            _height = input.Height;
+            _board = new int[_width, _height];
 
-            Dictionary<int, List<Pixel>> patterns = Find(width, height);
+            Dictionary<int, List<Pixel>> patterns = Find();
             var images = new Dictionary<int, Bitmap>();
 
             foreach (KeyValuePair<int, List<Pixel>> pattern in patterns)
@@ -41,112 +43,82 @@ namespace ConnectedComponentLabeling
 
         #region Protected Methods
 
-        protected virtual bool CheckIsForeGround(Pixel currentPixel)
+        protected virtual bool CheckIsBackGround(Pixel currentPixel)
         {
-            return currentPixel.color.A == 255 && currentPixel.color.R == 0 && currentPixel.color.G == 0 && currentPixel.color.B == 0;
+            return currentPixel.color.A == 255 && currentPixel.color.R == 255 && currentPixel.color.G == 255 && currentPixel.color.B == 255;
         }
 
         #endregion
 
         #region Private Methods
 
-        private Dictionary<int, List<Pixel>> Find(int width, int height)
+        private Dictionary<int, List<Pixel>> Find()
         {
             int labelCount = 1;
             var allLabels = new Dictionary<int, Label>();
 
-            for (int i = 0; i < height; i++)
+            for (int i = 0; i < _height; i++)
             {
-                for (int j = 0; j < width; j++)
+                for (int j = 0; j < _width; j++)
                 {
                     Pixel currentPixel = new Pixel(new Point(j, i), _input.GetPixel(j, i));
 
-                    if (CheckIsForeGround(currentPixel))
+                    if (CheckIsBackGround(currentPixel))
                     {
-                        HashSet<int> neighboringLabels = GetNeighboringLabels(currentPixel, width, height);
-                        int currentLabel;
+                        continue;
+                    }
 
-                        if (neighboringLabels.Count == 0)
-                        {
-                            currentLabel = labelCount;
-                            allLabels.Add(currentLabel, new Label(currentLabel));
-                            labelCount++;
-                        }
-                        else
-                        {
-                            currentLabel = neighboringLabels.Min();
-                            var root = allLabels[currentLabel].GetRoot();
+                    IEnumerable<int> neighboringLabels = GetNeighboringLabels(currentPixel);
+                    int currentLabel;
 
-                            foreach (var item in neighboringLabels)
+                    if (!neighboringLabels.Any())
+                    {
+                        currentLabel = labelCount;
+                        allLabels.Add(currentLabel, new Label(currentLabel));
+                        labelCount++;
+                    }
+                    else
+                    {
+                        currentLabel = neighboringLabels.Min(n => allLabels[n].GetRoot().Name);
+                        var root = allLabels[currentLabel].GetRoot();
+
+                        foreach (var item in neighboringLabels)
+                        {
+                            var root2 = allLabels[item].GetRoot();
+
+                            if (root.Name != root2.Name)
                             {
-                                var root2 = allLabels[item].GetRoot();
-
-                                if (root.Name != root2.Name)
-                                {
-                                    allLabels[item].Join(allLabels[currentLabel]);
-                                }
+                                allLabels[item].Join(allLabels[currentLabel]);
                             }
                         }
-
-                        _board[j, i] = currentLabel;
                     }
+
+                    _board[j, i] = currentLabel;
                 }
             }
 
 
-            Dictionary<int, List<Pixel>> patterns = AggregatePatterns(allLabels, width, height);
+            Dictionary<int, List<Pixel>> patterns = AggregatePatterns(allLabels);
 
             return patterns;
         }
 
-        private HashSet<int> GetNeighboringLabels(Pixel pix, int width, int height)
+        private IEnumerable<int> GetNeighboringLabels(Pixel pix)
         {
-            var neighboringLabels = new HashSet<int>();
-            int x = pix.Position.Y;
-            int y = pix.Position.X;
+            var neighboringLabels = new List<int>();
 
-            if (x > 0)//North
+            for (int i = pix.Position.Y - 1; i <= pix.Position.Y + 2 && i < _height - 1; i++)
             {
-                CheckCorner(neighboringLabels, x - 1, y);
-
-                if (y > 0)//North West
+                for (int j = pix.Position.X - 1; j <= pix.Position.X + 2 && j < _width - 1; j++)
                 {
-                    CheckCorner(neighboringLabels, x - 1, y - 1);
-                }
-
-                if (y < width - 1)//North East
-                {
-                    CheckCorner(neighboringLabels, x - 1, y + 1);
-                }
-            }
-            if (y > 0)//West
-            {
-                CheckCorner(neighboringLabels, x, y - 1);
-
-                if (x < height - 1)//South West
-                {
-                    CheckCorner(neighboringLabels, x + 1, y - 1);
-                }
-            }
-            if (y < width - 1)//East
-            {
-                CheckCorner(neighboringLabels, x, y + 1);
-
-                if (x < height - 1)//South East
-                {
-                    CheckCorner(neighboringLabels, x + 1, y + 1);
+                    if (i > -1 && j > -1 && _board[j, i] != 0)
+                    {
+                        neighboringLabels.Add(_board[j, i]);
+                    }
                 }
             }
 
             return neighboringLabels;
-        }
-
-        private void CheckCorner(HashSet<int> neighboringLabels, int i, int j)
-        {
-            if (_board[j, i] != 0 && !neighboringLabels.Contains(_board[j, i]))
-            {
-                neighboringLabels.Add(_board[j, i]);
-            }
         }
 
         private Bitmap CreateBitmap(List<Pixel> pixels)
@@ -191,26 +163,32 @@ namespace ConnectedComponentLabeling
             return isWidth ? shape.Position.X : shape.Position.Y;
         }
 
-        private Dictionary<int, List<Pixel>> AggregatePatterns(Dictionary<int, Label> allLabels, int width, int height)
+        private Dictionary<int, List<Pixel>> AggregatePatterns(Dictionary<int, Label> allLabels)
         {
             var patterns = new Dictionary<int, List<Pixel>>();
 
-            for (int i = 0; i < height; i++)
+            for (int i = 0; i < _height; i++)
             {
-                for (int j = 0; j < width; j++)
+                for (int j = 0; j < _width; j++)
                 {
                     int patternNumber = _board[j, i];
 
                     if (patternNumber != 0)
                     {
                         patternNumber = allLabels[patternNumber].GetRoot().Name;
+                        List<Pixel> pattern;
 
                         if (!patterns.ContainsKey(patternNumber))
                         {
-                            patterns.Add(patternNumber, new List<Pixel>());
+                            pattern = new List<Pixel>();
+                        }
+                        else
+                        {
+                            pattern = patterns[patternNumber];
                         }
 
-                        patterns[patternNumber].Add(new Pixel(new Point(j, i), Color.Black));
+                        pattern.Add(new Pixel(new Point(j, i), Color.Black));
+                        patterns[patternNumber] = pattern;
                     }
                 }
             }
