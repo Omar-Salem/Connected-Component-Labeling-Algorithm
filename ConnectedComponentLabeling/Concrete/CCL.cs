@@ -176,19 +176,13 @@ namespace ConnectedComponentLabeling
                     if (patternNumber != 0)
                     {
                         patternNumber = allLabels[patternNumber].GetRoot().Name;
-                        List<Pixel> pattern;
 
                         if (!patterns.ContainsKey(patternNumber))
                         {
-                            pattern = new List<Pixel>();
-                        }
-                        else
-                        {
-                            pattern = patterns[patternNumber];
+                            patterns[patternNumber] = new List<Pixel>();
                         }
 
-                        pattern.Add(new Pixel(new Point(j, i), Color.Black));
-                        patterns[patternNumber] = pattern;
+                        patterns[patternNumber].Add(new Pixel(new Point(j, i), Color.Black));
                     }
                 }
             }
