@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Drawing;
 using System.ComponentModel.Composition;
 using System.Linq;
@@ -32,8 +32,8 @@ namespace ConnectedComponentLabeling
 
             foreach (KeyValuePair<int, List<Pixel>> pattern in patterns)
             {
-                Bitmap output = CreateBitmap(pattern.Value);
-                images.Add(pattern.Key, output);
+                Bitmap bmp = CreateBitmap(pattern.Value);
+                images.Add(pattern.Key, bmp);
             }
 
             return images;
@@ -80,15 +80,13 @@ namespace ConnectedComponentLabeling
                     else
                     {
                         currentLabel = neighboringLabels.Min(n => allLabels[n].GetRoot().Name);
-                        var root = allLabels[currentLabel].GetRoot();
+                        Label root = allLabels[currentLabel].GetRoot();
 
-                        foreach (var item in neighboringLabels)
+                        foreach (var neighbor in neighboringLabels)
                         {
-                            var root2 = allLabels[item].GetRoot();
-
-                            if (root.Name != root2.Name)
+                            if (root.Name != allLabels[neighbor].GetRoot().Name)
                             {
-                                allLabels[item].Join(allLabels[currentLabel]);
+                                allLabels[neighbor].Join(allLabels[currentLabel]);
                             }
                         }
                     }
@@ -121,48 +119,6 @@ namespace ConnectedComponentLabeling
             return neighboringLabels;
         }
 
-        private Bitmap CreateBitmap(List<Pixel> pixels)
-        {
-            int widthShift, heightShift;
-            int w = GetDimension(pixels, out widthShift, true);
-            int h = GetDimension(pixels, out heightShift, false);
-            var output = new Bitmap(w, h);
-
-            foreach (Pixel pix in pixels)
-            {
-                output.SetPixel(pix.Position.X - widthShift, pix.Position.Y - heightShift, pix.color);
-            }
-
-            return output;
-        }
-
-        private int GetDimension(List<Pixel> shape, out int dimensionShift, bool isWidth)
-        {
-            int result = dimensionShift = CheckDimensionType(shape[0], isWidth);
-
-            for (int i = 1; i < shape.Count; i++)
-            {
-                int dimension = CheckDimensionType(shape[i], isWidth);
-
-                if (result < dimension)
-                {
-                    result = dimension;
-                }
-
-                if (dimensionShift > dimension)
-                {
-                    dimensionShift = dimension;
-                }
-            }
-
-            return (result + 1) - dimensionShift;
-        }
-
-        private int CheckDimensionType(Pixel shape, bool isWidth)
-        {
-            return isWidth ? shape.Position.X : shape.Position.Y;
-        }
-
         private Dictionary<int, List<Pixel>> AggregatePatterns(Dictionary<int, Label> allLabels)
         {
             var patterns = new Dictionary<int, List<Pixel>>();
@@ -188,6 +144,27 @@ namespace ConnectedComponentLabeling
             }
 
             return patterns;
+        }
+
+        private Bitmap CreateBitmap(List<Pixel> pattern)
+        {
+            int minX = pattern.Min(p => p.Position.X);
+            int maxX = pattern.Max(p => p.Position.X);
+
+            int minY = pattern.Min(p => p.Position.Y);
+            int maxY = pattern.Max(p => p.Position.Y);
+
+            int width = maxX + 1 - minX;
+            int height = maxY + 1 - minY;
+
+            var bmp = new Bitmap(width, height);
+
+            foreach (Pixel pix in pattern)
+            {
+                bmp.SetPixel(pix.Position.X - minX, pix.Position.Y - minY, pix.color);//shift position by minX and minY
+            }
+
+            return bmp;
         }
 
         #endregion
