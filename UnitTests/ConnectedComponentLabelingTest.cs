@@ -9,7 +9,34 @@ namespace UnitTests
     [TestClass()]
     public class ConnectedComponentLabelingTest
     {
-        string savePath = AppDomain.CurrentDomain.BaseDirectory + @"\Images\";
+        #region Member Variables
+
+        private readonly string _baseDirectory, _inputDirectory;
+        private string _outputDirectory;
+        private readonly CCL _connectedComponentLabelling;
+
+        #endregion
+
+        #region Constructor
+
+        public ConnectedComponentLabelingTest()
+        {
+            _baseDirectory = Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).Parent.FullName;
+            _inputDirectory = Path.Combine(_baseDirectory, "Input");
+            _connectedComponentLabelling = new CCL();
+        }
+
+        #endregion
+
+        #region Test Initialize
+
+        [TestInitialize()]
+        public void Init()
+        {
+            _outputDirectory = Path.Combine(_baseDirectory, "Output");
+        }
+
+        #endregion
 
         #region Test Methods
 
@@ -17,15 +44,16 @@ namespace UnitTests
         public void Process_OneEntityTest()
         {
             //Arrange
-            IConnectedComponentLabeling target = new CCL();
-            Bitmap input = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + @"\One.bmp");
+            Bitmap input = new Bitmap(Path.Combine(_inputDirectory, "One.bmp"));
+            _outputDirectory = Path.Combine(_outputDirectory, "One");
+            Directory.CreateDirectory(_outputDirectory);
 
             //Act
-            var images = target.Process(input);
+            var images = _connectedComponentLabelling.Process(input);
 
             foreach (var image in images)
             {
-                image.Value.Save(savePath + image.Key + ".bmp");
+                image.Value.Save(Path.Combine(_outputDirectory, image.Key + ".bmp"));
             }
 
             //Assert
@@ -36,15 +64,16 @@ namespace UnitTests
         public void Process_TwoEntitiesTest()
         {
             //Arrange
-            IConnectedComponentLabeling target = new CCL();
-            Bitmap input = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + @"\Two.bmp");
+            Bitmap input = new Bitmap(Path.Combine(_inputDirectory, "Two.bmp"));
+            _outputDirectory = Path.Combine(_outputDirectory, "Two");
+            Directory.CreateDirectory(_outputDirectory);
 
             //Act
-            var images = target.Process(input);
+            var images = _connectedComponentLabelling.Process(input);
 
             foreach (var image in images)
             {
-                image.Value.Save(savePath + image.Key + ".bmp");
+                image.Value.Save(Path.Combine(_outputDirectory, image.Key + ".bmp"));
             }
 
             //Assert
@@ -55,34 +84,21 @@ namespace UnitTests
         public void Process_SixEntitiesTest()
         {
             //Arrange
-            IConnectedComponentLabeling target = new CCL();
-            Bitmap input = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + @"\Six.bmp");
+            Bitmap input = new Bitmap(Path.Combine(_inputDirectory, "Six.bmp"));
+            _outputDirectory = Path.Combine(_outputDirectory, "Six");
+            Directory.CreateDirectory(_outputDirectory);
 
             //Act
-            var images = target.Process(input);
+            var images = _connectedComponentLabelling.Process(input);
 
             foreach (var image in images)
             {
-                image.Value.Save(savePath + image.Key + ".bmp");
+                image.Value.Save(Path.Combine(_outputDirectory, image.Key + ".bmp"));
             }
 
             //Assert
             Assert.AreEqual(6, images.Count);
-        } 
-
-        #endregion
-
-        #region Cleanup
-
-        [TestCleanup()]
-        public void Clean()
-        {
-            string[] files = Directory.GetFiles(savePath);
-            foreach (var img in files)
-            {
-                File.Delete(img);
-            }
-        } 
+        }
 
         #endregion
     }

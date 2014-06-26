@@ -61,6 +61,12 @@
       <Name>ConnectedComponentLabeling</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="Input\One.bmp" />
+    <Content Include="Input\Six.bmp" />
+    <Content Include="Input\Two.bmp" />
+    <Content Include="Output\dummy.txt" />
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
