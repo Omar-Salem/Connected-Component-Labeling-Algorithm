@@ -28,17 +28,22 @@ namespace ConnectedComponentLabeling
 
         #region Public Methods
 
-        internal Label GetRoot()
+        public Label GetRoot()
         {
-            if (this.Root != this)
+            var thisObj = this;
+            var root = this.Root;
+
+            while (thisObj != root)
             {
-                this.Root = this.Root.GetRoot();
+                thisObj = root;
+                root = root.Root;
             }
 
+            this.Root = root;
             return this.Root;
         }
 
-        internal void Join(Label root2)
+        public void Join(Label root2)
         {
             if (root2.Rank < this.Rank)//is the rank of Root2 less than that of Root1 ?
             {
@@ -52,6 +57,28 @@ namespace ConnectedComponentLabeling
                     root2.Rank++;//increment Root2, we need to reach a single root for the whole tree
                 }
             }
+        }
+
+        public override bool Equals(object obj)
+        {
+            var other = obj as Label;
+
+            if (other == null)
+            {
+                return false;
+            }
+
+            return other.Name == this.Name;
+        }
+
+        public override int GetHashCode()
+        {
+            return this.Name;
+        }
+
+        public override string ToString()
+        {
+            return Name.ToString();
         }
 
         #endregion
